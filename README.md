@@ -6,6 +6,22 @@ Aplicación en React que permite agregar frases que se van mostrando en cards en
 Permite buscar dentro de las frases un contenido y filtrar las cards que contengan ese texto al comenzar
 a digitar las letras del mismo. También se pueden eliminar frases.
 
+## Características Detalladas
+
+### Funcionalidades Principales
+
+- **Agregar Frases**:
+  - Crear nuevas tarjetas con texto personalizado
+  - Presionar Enter o hacer clic en "Add Sentence" para crear una tarjeta
+  - Prevención automática de frases duplicadas
+- **Búsqueda**:
+  - Filtrado en tiempo real mientras escribes
+  - Búsqueda sin distinción entre mayúsculas y minúsculas
+- **Eliminar Tarjetas**:
+- **Almacenamiento Persistente**:
+  - Todas las tarjetas se guardan en localStorage
+  - Los datos persisten entre sesiones del navegador
+
 ## Ver el proyecto
 
 Para correr el proyecto localmente,
@@ -19,12 +35,3 @@ Para ver la demo en vivo, [click acá](https://about-phrases.vercel.app/)
 
 - React
 - Tailwind
-
-## Cosas que podrian hacerlo mas interesante
-
-- Ordernar las cards por fecha, etc
-- Usar alguna api para obtener frases randoms
-  - Random https://api.quotable.io/quotes/random
-  - Movies https://juanroldan.com.ar/movie-quotes-api/#quotes
-- Generar imagenes con IA en base a una frase
-- Etc
