@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import { cn } from "../lib/utils";
 
 type Props = PropsWithChildren<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -6,7 +7,12 @@ type Props = PropsWithChildren<
   }
 >;
 
-export function Button({ children, variant = "solid", ...rest }: Props) {
+export function Button({
+  children,
+  variant = "solid",
+  className,
+  ...rest
+}: Props) {
   const baseStyles = "p-2 rounded-md cursor-pointer";
   const variantStyles =
     variant === "outline"
@@ -14,7 +20,7 @@ export function Button({ children, variant = "solid", ...rest }: Props) {
       : "bg-blue-500 text-white hover:bg-blue-600";
 
   return (
-    <button className={`${baseStyles} ${variantStyles}`} {...rest}>
+    <button className={cn(baseStyles, variantStyles, className)} {...rest}>
       {children}
     </button>
   );

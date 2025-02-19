@@ -1,14 +1,17 @@
 import { useState, useCallback, useEffect } from "react";
-import { X } from "lucide-react";
+import { Trash } from "lucide-react";
 import { Input } from "./input";
 import { Button } from "./button";
-import { Card, CardContent } from "./card";
+import { Card } from "./card";
 import { ExampleSentences } from "./example-sentences";
 
+export type Sentence = {
+  text: string;
+  timestamp: number;
+};
+
 export default function SentenceCards() {
-  const [sentences, setSentences] = useState<
-    Array<{ text: string; timestamp: number }>
-  >(() => {
+  const [sentences, setSentences] = useState<Sentence[]>(() => {
     const saved = localStorage.getItem("sentences");
     return saved ? JSON.parse(saved) : [];
   });
@@ -17,13 +20,20 @@ export default function SentenceCards() {
 
   const addSentence = useCallback((sentence: string) => {
     if (sentence.trim() !== "") {
-      setSentences((prev) => [
-        ...prev,
-        {
-          text: sentence.trim(),
-          timestamp: Date.now(),
-        },
-      ]);
+      setSentences((prev) => {
+        // if it exists, don't add it
+        const existing = prev.find((s) => s.text === sentence.trim());
+        if (existing) {
+          return prev;
+        }
+        return [
+          ...prev,
+          {
+            text: sentence.trim(),
+            timestamp: Date.now(),
+          },
+        ];
+      });
       setNewSentence("");
     }
   }, []);
@@ -56,11 +66,13 @@ export default function SentenceCards() {
             }
           }}
           className="mb-2"
+          aria-label="Add a new sentence"
+          id="new-sentence-input"
         />
         <Button onClick={() => addSentence(newSentence)}>Add Sentence</Button>
       </div>
 
-      <ExampleSentences onAdd={addSentence} />
+      <ExampleSentences onAdd={addSentence} sentences={sentences} />
 
       <Input
         type="text"
@@ -68,6 +80,8 @@ export default function SentenceCards() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="mb-4"
+        aria-label="Search sentences"
+        id="search-sentences-input"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -76,7 +90,7 @@ export default function SentenceCards() {
             key={index}
             className="relative transition-all duration-300 hover:scale-105 hover:shadow-lg animate-fade-in"
           >
-            <CardContent className="p-4">
+            <div className="py-4 pl-4 pr-10">
               <p className="mb-2">{sentence.text}</p>
               <p className="text-sm text-gray-500">
                 {new Date(sentence.timestamp).toLocaleDateString("en-US", {
@@ -88,12 +102,13 @@ export default function SentenceCards() {
                 })}
               </p>
               <Button
+                aria-label="Delete sentence"
                 className="absolute top-2 right-2"
                 onClick={() => deleteSentence(index)}
               >
-                <X className="h-4 w-4" />
+                <Trash className="h-4 w-4" />
               </Button>
-            </CardContent>
+            </div>
           </Card>
         ))}
       </div>

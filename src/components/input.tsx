@@ -1,9 +1,17 @@
 export function Input({
   className,
+  id,
+  "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedby,
   ...rest
-}: React.InputHTMLAttributes<HTMLInputElement>) {
+}: React.InputHTMLAttributes<HTMLInputElement> & {
+  id: string;
+}) {
   return (
     <input
+      id={id}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
       className={`
         w-full px-4 py-2
         border border-gray-300 rounded-md
