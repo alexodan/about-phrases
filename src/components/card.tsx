@@ -9,7 +9,7 @@ export function Card({ children, className, ...rest }: Props) {
       className={cn(
         "border border-blue-500 rounded-md bg-white text-gray-900",
         "hover:border-blue-600 transition-colors duration-200",
-        "shadow-sm",
+        "shadow-sm text-ellipsis",
         className
       )}
       {...rest}

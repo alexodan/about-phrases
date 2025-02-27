@@ -10,6 +10,8 @@ export type Sentence = {
   timestamp: number;
 };
 
+const MAX_SENTENCE_LENGTH = 280;
+
 export default function SentenceCards() {
   const [sentences, setSentences] = useState<Sentence[]>(() => {
     const saved = localStorage.getItem("sentences");
@@ -17,29 +19,45 @@ export default function SentenceCards() {
   });
   const [newSentence, setNewSentence] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const addSentence = useCallback((sentence: string) => {
-    if (sentence.trim() !== "") {
+    const trimmedSentence = sentence.trim();
+    if (
+      trimmedSentence !== "" &&
+      trimmedSentence.length <= MAX_SENTENCE_LENGTH
+    ) {
       setSentences((prev) => {
-        // if it exists, don't add it
-        const existing = prev.find((s) => s.text === sentence.trim());
+        const existing = prev.find((s) => s.text === trimmedSentence);
         if (existing) {
+          setError("That sentence was already added!");
           return prev;
         }
+        setError(null);
+        setNewSentence("");
         return [
           ...prev,
           {
-            text: sentence.trim(),
+            text: trimmedSentence,
             timestamp: Date.now(),
           },
         ];
       });
-      setNewSentence("");
+    } else if (trimmedSentence.length > MAX_SENTENCE_LENGTH) {
+      setError(
+        `Sentence is too long (maximum ${MAX_SENTENCE_LENGTH} characters)`
+      );
+    } else if (trimmedSentence === "") {
+      setError("Please enter a sentence");
     }
   }, []);
 
   const deleteSentence = useCallback((index: number) => {
     setSentences((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleSearch = useCallback((value: string) => {
+    setSearchTerm(value);
   }, []);
 
   const filteredSentences = sentences.filter((sentence) =>
@@ -69,8 +87,19 @@ export default function SentenceCards() {
           aria-label="Add a new sentence"
           id="new-sentence-input"
         />
-        <Button onClick={() => addSentence(newSentence)}>Add Sentence</Button>
+        <div className="flex justify-between">
+          <Button onClick={() => addSentence(newSentence)}>Add Sentence</Button>
+          <span
+            className={
+              newSentence.length > MAX_SENTENCE_LENGTH ? "text-red-500" : ""
+            }
+          >
+            {MAX_SENTENCE_LENGTH - newSentence.length} characters left
+          </span>
+        </div>
       </div>
+
+      {error && <p className="text-red-500 mb-2">{error}</p>}
 
       <ExampleSentences onAdd={addSentence} sentences={sentences} />
 
@@ -78,7 +107,7 @@ export default function SentenceCards() {
         type="text"
         placeholder="Search sentences"
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => handleSearch(e.target.value)}
         className="mb-4"
         aria-label="Search sentences"
         id="search-sentences-input"
@@ -91,7 +120,7 @@ export default function SentenceCards() {
             className="relative transition-all duration-300 hover:scale-105 hover:shadow-lg animate-fade-in"
           >
             <div className="py-4 pl-4 pr-10">
-              <p className="mb-2">{sentence.text}</p>
+              <p className="mb-2 overflow-hidden">{sentence.text}</p>
               <p className="text-sm text-gray-500">
                 {new Date(sentence.timestamp).toLocaleDateString("en-US", {
                   year: "numeric",

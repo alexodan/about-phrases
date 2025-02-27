@@ -14,29 +14,26 @@ const wittySentences = [
 ];
 
 export function ExampleSentences({ onAdd, sentences }: ExampleSentencesProps) {
-  console.log(sentences);
   return (
     <div>
       <h2 className="text-lg font-semibold mb-2">
         Example Sentences (click one to add it to your list)
       </h2>
       <div className="flex flex-wrap gap-2 mb-4">
-        {wittySentences.map((exampleSentence, index) => (
-          // if it exists, strike through it and disable
-          <Button
-            key={index}
-            variant="outline"
-            className={
-              sentences.some((s) => s.text === exampleSentence)
-                ? "line-through"
-                : ""
-            }
-            onClick={() => onAdd(exampleSentence)}
-            disabled={sentences.some((s) => s.text === exampleSentence)}
-          >
-            {exampleSentence}
-          </Button>
-        ))}
+        {wittySentences.map((exampleSentence, index) => {
+          const isAdded = sentences.some((s) => s.text === exampleSentence);
+          return (
+            <Button
+              key={index}
+              variant="outline"
+              className={isAdded ? "line-through" : ""}
+              onClick={() => onAdd(exampleSentence)}
+              disabled={isAdded}
+            >
+              {exampleSentence}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );

@@ -94,4 +94,79 @@ describe("SentenceCards", () => {
     expect(savedSentences).toHaveLength(1);
     expect(savedSentences[0].text).toBe("Test sentence");
   });
+
+  test("shows error for empty sentence", async () => {
+    render(<SentenceCards />);
+    const addButton = screen.getByText("Add Sentence");
+
+    await userEvent.click(addButton);
+    expect(screen.getByText("Please enter a sentence")).toBeInTheDocument();
+  });
+
+  test("shows error for duplicate sentence", async () => {
+    render(<SentenceCards />);
+    const input = screen.getByLabelText("Add a new sentence");
+    const addButton = screen.getByText("Add Sentence");
+
+    await userEvent.type(input, "Test sentence");
+    await userEvent.click(addButton);
+    await userEvent.type(input, "Test sentence");
+    await userEvent.click(addButton);
+
+    expect(
+      screen.getByText("That sentence was already added!")
+    ).toBeInTheDocument();
+  });
+
+  test("shows error for sentence exceeding maximum length", async () => {
+    render(<SentenceCards />);
+    const input = screen.getByLabelText("Add a new sentence");
+    const addButton = screen.getByText("Add Sentence");
+
+    const longSentence = "a".repeat(281);
+    await userEvent.type(input, longSentence);
+    await userEvent.click(addButton);
+
+    expect(
+      screen.getByText("Sentence is too long (maximum 280 characters)")
+    ).toBeInTheDocument();
+  });
+
+  test("shows remaining character count", async () => {
+    render(<SentenceCards />);
+    const input = screen.getByLabelText("Add a new sentence");
+
+    expect(screen.getByText("280 characters left")).toBeInTheDocument();
+
+    await userEvent.type(input, "Hello");
+    expect(screen.getByText("275 characters left")).toBeInTheDocument();
+  });
+
+  test("shows character count in red when exceeding limit", async () => {
+    render(<SentenceCards />);
+    const input = screen.getByLabelText("Add a new sentence");
+
+    const longSentence = "a".repeat(281);
+    await userEvent.type(input, longSentence);
+
+    const charCount = screen.getByText("-1 characters left");
+    expect(charCount).toHaveClass("text-red-500");
+  });
+
+  test("clears input and error after successful addition", async () => {
+    render(<SentenceCards />);
+    const input = screen.getByLabelText("Add a new sentence");
+    const addButton = screen.getByText("Add Sentence");
+
+    await userEvent.click(addButton);
+    expect(screen.getByText("Please enter a sentence")).toBeInTheDocument();
+
+    await userEvent.type(input, "Valid sentence");
+    await userEvent.click(addButton);
+
+    expect(input).toHaveValue("");
+    expect(
+      screen.queryByText("Please enter a sentence")
+    ).not.toBeInTheDocument();
+  });
 });

@@ -35,3 +35,12 @@ Para ver la demo en vivo, [click acá](https://about-phrases.vercel.app/)
 
 - React
 - Tailwind
+
+# Cosas que podrian hacerlo mas interesante
+
+- Ordernar las cards por fecha, etc
+- Usar alguna api para obtener frases randoms
+  - Random https://api.quotable.io/quotes/random
+  - Movies https://juanroldan.com.ar/movie-quotes-api/#quotes
+- Generar imagenes con IA en base a una frase
+- Etc
